@@ -1,6 +1,6 @@
 import 'whatwg-fetch';
 
-const BACKEND = 'http://localhost:8000';
+const BACKEND = '';
 
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {

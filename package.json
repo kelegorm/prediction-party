@@ -10,6 +10,8 @@
     "cors": "^2.8.1",
     "express": "^4.14.0",
     "moment": "^2.17.1",
+    "passport": "^0.3.2",
+    "passport-slack": "0.0.7",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "sqlite3": "^3.1.8",
@@ -20,5 +22,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }

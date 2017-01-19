@@ -5,8 +5,6 @@ import moment from 'moment';
 
 moment.locale('ru');
 
-const BACKEND = 'http://localhost:8000';
-
 class Login extends Component {
   constructor(props) {
     super(props);

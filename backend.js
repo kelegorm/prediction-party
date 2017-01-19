@@ -1,9 +1,41 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+/* eslint-env node */
+/* eslint-disable no-console */
+const express = require('express');
+const bodyParser = require('body-parser');
 
-var cors = require('cors');
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('bets.sqlite');
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('bets.sqlite');
+
+const passport = require('passport');
+const SlackStrategy = require('passport-slack').Strategy;
+const { CLIENT_ID, CLIENT_SECRET } = process.env;
+
+passport.use(
+  new SlackStrategy({
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+  }, (accessToken, refreshToken, profile, done) => {
+    done(null, profile);
+  })
+);
+
+const app = express();
+app.use(bodyParser.json());
+app.use(express.static('build'));
+
+// path to start the OAuth flow
+app.get('/auth/slack', passport.authorize('slack'));
+
+// OAuth callback url
+app.get('/auth/slack/callback',
+  passport.authorize('slack', { failureRedirect: '/' }),
+  (req, res) => {
+    console.log('success!');
+    res.redirect('/');
+  }
+);
+
+
 
 function initDB() {
   db.run(`
@@ -34,12 +66,8 @@ function initDB() {
 }
 initDB();
 
-var app = express();
-app.use(bodyParser.json());
-// app.use(express.static('static'));
-
 function checkToken(req, res, cb) {
-  var token = req.query.token || req.body.token;
+  const token = req.query.token || req.body.token;
   if (!token) {
     res.status(500).send('no token');
     return;
@@ -47,7 +75,7 @@ function checkToken(req, res, cb) {
   db.get(
     'SELECT login FROM users WHERE token = ?',
     token,
-    function(err, row) {
+    (err, row) => {
       if (err) {
         console.log('user lookup failed');
         res.status(500).send(err);
@@ -60,17 +88,17 @@ function checkToken(req, res, cb) {
         return;
       }
 
-      var login = row.login;
+      const login = row.login;
       cb(login);
     }
   );
 }
 
-app.get('/api/list', cors(), function(req, res) {
+app.get('/api/list', (req, res) => {
   // TODO - load from DB
-  var bets = [];
-  var error = undefined;
-  checkToken(req, res, function(login) {
+  const bets = [];
+  let error = undefined;
+  checkToken(req, res, (login) => {
     db.each(
       `
         SELECT
@@ -86,7 +114,7 @@ app.get('/api/list', cors(), function(req, res) {
         ORDER BY last_bet_created DESC
       `,
       login,
-      function(err, row) {
+      (err, row) => {
         if (err) {
           error = err;
           return;
@@ -100,11 +128,10 @@ app.get('/api/list', cors(), function(req, res) {
           last_bet_created: row.last_bet_created,
         });
       },
-      function (err) {
+      (err) => {
         if (err || error) {
           res.status(500).send(err || error);
-        }
-        else {
+        } else {
           res.json(bets);
         }
       }
@@ -112,20 +139,21 @@ app.get('/api/list', cors(), function(req, res) {
   });
 });
 
-app.options('/api/append', cors());
-app.post('/api/append', cors(), function(req, res) {
-  var topic_id = req.body.topic_id;
-  var confidence = req.body.confidence;
-  confidence = parseInt(confidence);
+app.post('/api/append', (req, res) => {
+  const topicId = req.body.topic_id;
+  let confidence = req.body.confidence;
+  confidence = parseInt(confidence, 10);
   if (confidence < 50 || confidence > 99) {
     res.status(500).send('Confidence must be an integer in [50,99] interval');
     return;
   }
-  var token = req.body.token;
-  checkToken(req, res, function(login) {
-    db.prepare('INSERT INTO bets(topic_id, confidence, author, created) VALUES(?,?,?,STRFTIME("%s", CURRENT_TIMESTAMP))').run(
-      topic_id, confidence, login,
-      function(err) {
+  checkToken(req, res, (login) => {
+    db.prepare(`
+        INSERT INTO bets(topic_id, confidence, author, created)
+        VALUES(?,?,?,STRFTIME("%s", CURRENT_TIMESTAMP))
+    `).run(
+      topicId, confidence, login,
+      (err) => {
         if (err) {
           console.log('insert into bets failed');
           res.status(500).send(err);
@@ -139,19 +167,21 @@ app.post('/api/append', cors(), function(req, res) {
   });
 });
 
-app.options('/api/add', cors());
-app.post('/api/add', cors(), function(req, res) {
-  var title = req.body.title;
+app.post('/api/add', (req, res) => {
+  const title = req.body.title;
   if (title.length < 8) {
     res.status(500).send('title is too short');
     return;
   }
-  var confidence = req.body.confidence;
+  const confidence = req.body.confidence;
 
-  checkToken(req, res, function(login) {
-    db.prepare('INSERT INTO topics(title, created) VALUES(?,STRFTIME("%s", CURRENT_TIMESTAMP))').run(
+  checkToken(req, res, (login) => {
+    db.prepare(`
+      INSERT INTO topics(title, created)
+      VALUES(?,STRFTIME("%s", CURRENT_TIMESTAMP))
+    `).run(
       title,
-      function(err) {
+      (err) => {
         if (err) {
           console.log('insert into topics failed');
           res.status(500).send(err);
@@ -159,14 +189,19 @@ app.post('/api/add', cors(), function(req, res) {
         }
 
         console.log('inserted into topics');
-        var topic_id = this.lastID;
-        db.prepare('INSERT INTO bets(topic_id, confidence, author, created) VALUES(?,?,?,STRFTIME("%s", CURRENT_TIMESTAMP))').run(
-          topic_id, confidence, login,
-          function(err) {
-            if (err) {
+        const topicId = this.lastID;
+        db.prepare(`
+          INSERT INTO bets(topic_id, confidence, author, created)
+          VALUES(?,?,?,STRFTIME("%s", CURRENT_TIMESTAMP))
+        `).run(
+          topicId, confidence, login,
+          (insertErr) => {
+            if (insertErr) {
               console.log('bets insert failed');
-              db.prepare('DELETE FROM topic WHERE topic_id=?').run(topic_id, function(err) {
-                console.log('cleanup failed');
+              db.prepare('DELETE FROM topic WHERE topic_id=?').run(topicId, (deleteErr) => {
+                if (deleteErr) {
+                  console.log('cleanup failed');
+                }
               });
               res.status(500).send(err);
               return;
@@ -181,37 +216,37 @@ app.post('/api/add', cors(), function(req, res) {
   });
 });
 
-app.options('/api/login', cors());
-app.get('/api/check-token', cors(), function(req, res) {
-  checkToken(req, res, function(login) {
-    res.json({ login: login });
+app.get('/api/check-token', (req, res) => {
+  checkToken(req, res, (login) => {
+    res.json({ login });
   });
 });
 
-app.options('/api/login', cors());
-app.post('/api/login', cors(), function(req, res) {
-  var login = req.body.login;
+app.post('/api/login', (req, res) => {
+  const login = req.body.login;
   if (!RegExp(/^[a-zA-Z0-9_]+$/).test(login)) {
     res.status(500).send('login should be alphanumerical (with possible underscores)');
     return;
   }
-  var token = Math.random().toString(36).slice(-8);
+  const token = Math.random().toString(36).slice(-8);
 
-  db.prepare('INSERT INTO users(login, token, created) VALUES(?,?,STRFTIME("%s", CURRENT_TIMESTAMP))').run(
+  db.prepare(
+    'INSERT INTO users(login, token, created) VALUES(?,?,STRFTIME("%s", CURRENT_TIMESTAMP))'
+  ).run(
     login, token,
-    function(err) {
+    (err) => {
       if (err) {
         res.status(500).send(err);
-      }
-      else {
-        res.json({ login: login, token: token });
+      } else {
+        res.json({ login, token });
       }
     }
   );
 });
 
-app.listen(8000, 'localhost', function () {
-  console.log('App is listening on http://localhost:8000');
+const PORT = 3001;
+app.listen(PORT, 'localhost', () => {
+  console.log(`App is listening on http://localhost:${PORT}`);
 });
 
 /*
