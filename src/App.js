@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types, react/no-multi-comp */
 import React, { Component } from 'react';
 import './App.css';
 import Api from './api';
@@ -14,38 +15,54 @@ class Login extends Component {
   }
   handleSubmit(event) {
     event.preventDefault();
-    Api.login(this.state.login)
+    Api.fakeuser(this.state.login)
       .then(json => {
-        this.props.cb(this.state.login, json.token)
-      }).catch(
+        this.props.cb(json.login, json.token);
+      })
+      .catch(
         err => this.props.oops(err)
       );
   }
   handleChange(event) {
-    this.setState({ login: event.target.value });
+    this.setState({
+      login: event.target.value,
+    });
   }
   render() {
     return (
-      <form className="login" onSubmit={e => this.handleSubmit(e)}>
-        <input type="text" placeholder="Логин латиницей" value={this.state.text} onChange={e => this.handleChange(e)} />
-        <button onClick={e => this.handleSubmit(e)}>Войти</button>
-      </form>
-    )
+      <div>
+        <form className="login" action="/auth/slack" method="get">
+          <button>Войти через Slack</button>
+        </form>
+        {
+          this.props.dev_mode &&
+          <form className="login" onSubmit={e => this.handleSubmit(e)}>
+            <input
+              type="text"
+              placeholder="Логин латиницей"
+              value={this.state.text}
+              onChange={e => this.handleChange(e)}
+            />
+            <button onClick={e => this.handleSubmit(e)}>Войти</button>
+          </form>
+        }
+      </div>
+    );
   }
 }
 
-class Bet extends Component{
+class Bet extends Component {
   constructor(props) {
     super(props);
     this.state = {
       confidence: '',
-    }
+    };
   }
 
   handleSubmit(event) {
     event.preventDefault();
     Api.append(this.props.topic_id, this.state.confidence, this.props.token)
-      .then(json => {
+      .then(() => {
         this.props.refetch();
       });
   }
@@ -79,7 +96,14 @@ class Bet extends Component{
               (
                 <form onSubmit={e => this.handleSubmit(e)}>
                   <label>Ставка: </label>
-                  <input type="number" min="50" max="99" placeholder="hm?" value={this.state.confidence} onChange={e => this.handleConfidenceChange(e)} />
+                  <input
+                    type="number"
+                    min="50"
+                    max="99"
+                    placeholder="hm?"
+                    value={this.state.confidence}
+                    onChange={e => this.handleConfidenceChange(e)}
+                  />
                 </form>
               )
             }
@@ -88,21 +112,17 @@ class Bet extends Component{
       </div>
     );
   }
-};
-
-class BetList extends Component {
-  render() {
-    return (
-      <div className="bet-list">
-        {
-          this.props.bets.map(
-            (bet, i) => <Bet {...bet} token={this.props.token} refetch={this.props.refetch} key={bet.topic_id} />
-          )
-        }
-      </div>
-    );
-  }
 }
+
+const BetList = (props) => (
+  <div className="bet-list">
+    {
+      props.bets.map(
+        (bet) => <Bet {...bet} token={props.token} refetch={props.refetch} key={bet.topic_id} />
+      )
+    }
+  </div>
+);
 
 class BetAdd extends Component {
   constructor(props) {
@@ -121,7 +141,7 @@ class BetAdd extends Component {
   handleSubmit(event) {
     event.preventDefault();
     Api.add(this.state.title, this.state.confidence, this.props.token)
-      .then(json => {
+      .then(() => {
         this.props.refetch();
       })
       .catch(this.props.oops);
@@ -144,10 +164,21 @@ class BetAdd extends Component {
     return (
       <form className="bet-add" onSubmit={e => this.handleSubmit(e)}>
         <label>Текст ставки:</label>
-        <textarea placeholder="Например: Путин останется президентом" value={this.state.title} onChange={e => this.handleChange(e)} ref="text" />
+        <textarea
+          placeholder="Например: Путин останется президентом"
+          value={this.state.title}
+          onChange={e => this.handleChange(e)}
+          ref="text"
+        />
         <div className="bet-add--line2">
           <label>Степень уверенности:</label>
-          <input type="number" min="50" max="99" value={this.state.confidence} onChange={e => this.handleConfidenceChange(e)} />
+          <input
+            type="number"
+            min="50"
+            max="99"
+            value={this.state.confidence}
+            onChange={e => this.handleConfidenceChange(e)}
+          />
           <button disabled={!this.isValid()} onClick={e => this.handleSubmit(e)}>Добавить</button>
         </div>
       </form>
@@ -159,63 +190,56 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      error: undefined,
+      error: null,
+      login: undefined,
+      token: undefined,
       bets: [],
-      login: window.localStorage.getItem('prediction-party.login'),
-      token: window.localStorage.getItem('prediction-party.token'), // TODO validate token
     };
     this.setError = this.setError.bind(this);
   }
 
-  setAuth(login, token) {
-    this.setState({
-      login: login,
-      token: token,
-      error: undefined,
-    });
-    window.localStorage.setItem('prediction-party.login', login);
-    window.localStorage.setItem('prediction-party.token', token);
-    this.refetch();
+  componentWillMount() {
+    Api.checkAuth().then(
+      user => {
+        this.setAuth(user.login, user.token);
+      }
+    ).catch(
+      () => {
+        this.setState({
+          login: null,
+          token: null,
+        });
+      }
+    );
   }
 
-  refetch() {
-    console.log('refetch!');
-    Api.list(this.state.token)
-      .then(bets => this.setState({ bets }));
+  setAuth(login, token) {
+    this.setState({
+      login,
+      token,
+      error: null,
+    });
+    this.refetch();
   }
 
   setError(error) {
     this.setState({ error: String(error) });
   }
 
-  logout() {
-    window.localStorage.removeItem('prediction-party.login');
-    window.localStorage.removeItem('prediction-party.token');
-    this.setState({
-        login: undefined,
-        token: undefined,
-    })
+  refetch() {
+    Api.list(this.state.token)
+      .then(bets => this.setState({ bets }));
   }
 
-  componentWillMount() {
-    if (this.state.token) {
-      Api.checkToken(this.state.token).then(
-        login => {
-          if (login === this.state.login) {
-            this.refetch();
-          }
-          else {
-            this.logout();
-            this.setError('wrong login for the current token, huh?');
-          }
-        }
-      ).catch(
-        err => {
-          this.logout();
-          this.setError(err);
-        }
-      );
-    }
+  logout() {
+    Api.logout().then(
+      () => {
+        this.setState({
+          login: null,
+          token: null,
+        });
+      }
+    );
   }
 
   renderLogin() {
@@ -223,6 +247,7 @@ class App extends Component {
       <Login
         cb={(login, token) => this.setAuth(login, token)}
         oops={err => this.setError(err)}
+        dev_mode={false}
       />
     );
   }
@@ -234,7 +259,11 @@ class App extends Component {
           <div className="auth-data--login">
             login: {this.state.login}, token: {this.state.token}
           </div>
-          <a className="logout" href="#" onClick={() => this.logout()}>Выйти</a> (и никогда больше не войти)
+          <a
+            className="logout"
+            href="#"
+            onClick={() => this.logout()}
+          >Выйти</a>
         </div>
         <BetAdd
           refetch={() => this.refetch()}
@@ -249,32 +278,43 @@ class App extends Component {
         />
       </div>
     );
-
   }
 
   renderError() {
     if (!this.state.error) {
-      return;
+      return null;
     }
     return (
       <div className="error">
         {this.state.error}
       </div>
-    )
+    );
+  }
+
+  renderLoading() {
+    return null;
+  }
+
+  renderCore() {
+    if (this.state.token === null) {
+      return this.renderLogin();
+    }
+    if (this.state.token === undefined) {
+      return this.renderLoading();
+    }
+    return this.renderMain();
   }
 
   render() {
     return (
       <div className="App">
-      <header className="App-header">
-        Предсказания на 2017 год
-      </header>
-      <div className="App-main">
-        {this.renderError()}
-        {
-          this.state.token ? this.renderMain() : this.renderLogin()
-        }
-      </div>
+        <header className="App-header">
+          Предсказания на 2017 год
+        </header>
+        <div className="App-main">
+          {this.renderError()}
+          {this.renderCore()}
+        </div>
       </div>
     );
   }
@@ -310,4 +350,24 @@ TODO
    text with explanation of good bets
    single server with static
    fill bet list with my own bets
+*/
+
+/*
+AUTH ISSUES
+
+1. sign in with slack
+2. enter username (or token)
+   - quickly
+   - without direct backend calls
+   - but with backend support
+   - cache? not important
+3. check current user
+   - possible in dev with fetch()
+   - can save token in memory (to avoid credentials: 'same-origin', but not really necessary)
+
+Create user in dev:
+   - enter username
+   - create user on backend (DEV=1 mode, custom route)
+   - return user+token
+
 */

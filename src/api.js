@@ -5,13 +5,12 @@ const BACKEND = '';
 function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
     return response;
-  } else {
-    return response.text().then(
-      text => {
-        throw new Error(text);
-      }
-    );
   }
+  return response.text().then(
+    text => {
+      throw new Error(text);
+    }
+  );
 }
 
 function parseJSON(response) {
@@ -19,32 +18,35 @@ function parseJSON(response) {
 }
 
 
-const login = login => {
+const fakeuser = login => {
   return fetch(
-    `${BACKEND}/api/login`,
+    `${BACKEND}/api/fakeuser?login=${login}`,
+  ).then(checkStatus).then(parseJSON);
+};
+
+const checkAuth = () => {
+  return fetch(
+    `${BACKEND}/api/check-auth`,
     {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        login
-      })
+      credentials: 'same-origin',
     }
   ).then(checkStatus).then(parseJSON);
 };
 
-const checkToken = token => {
+const logout = () => {
   return fetch(
-    `${BACKEND}/api/check-token?token=${token}`,
-  ).then(checkStatus).then(parseJSON).then(json => json.login);
+    `${BACKEND}/api/logout`,
+    {
+      credentials: 'same-origin',
+    }
+  ).then(checkStatus).then(parseJSON);
 };
 
 const list = token => {
   return fetch(
-    `${BACKEND}/api/list?token=${token}`,
+    `${BACKEND}/api/list?token=${token}`
   ).then(checkStatus).then(parseJSON);
-}
+};
 
 const add = (title, confidence, token) => {
   return fetch(
@@ -52,11 +54,11 @@ const add = (title, confidence, token) => {
     {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         title, confidence, token
-      })
+      }),
     }
   ).then(checkStatus).then(parseJSON);
 };
@@ -67,18 +69,19 @@ const append = (topic_id, confidence, token) => {
     {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        topic_id, confidence, token
-      })
+        topic_id, confidence, token,
+      }),
     }
   ).then(checkStatus).then(parseJSON);
 };
 
 export default {
-  login,
-  checkToken,
+  fakeuser,
+  logout,
+  checkAuth,
   list,
   add,
   append,
