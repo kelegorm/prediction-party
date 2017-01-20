@@ -13,7 +13,7 @@ const db = new sqlite3.Database('bets.sqlite');
 
 const passport = require('passport');
 const SlackStrategy = require('passport-slack').Strategy;
-const { SESSION_SECRET, CLIENT_ID, CLIENT_SECRET } = process.env;
+const { SESSION_SECRET, CLIENT_ID, CLIENT_SECRET, SLACK_TEAM_ID } = process.env;
 
 function initDB() {
   db.run(`
@@ -103,8 +103,13 @@ passport.use(
           body += d;
         });
         res.on('end', () => {
-          const login = JSON.parse(body).user;
-          createOrGetUser(login, done);
+          console.log(body);
+          const data = JSON.parse(body);
+          if (data.team_id !== SLACK_TEAM_ID) {
+            done('wrong slack team');
+            return;
+          }
+          createOrGetUser(data.user, done);
         });
       }
     ).on('error', () => done('http error'));
