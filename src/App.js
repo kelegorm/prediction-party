@@ -100,7 +100,6 @@ class Bet extends Component {
                     type="number"
                     min="50"
                     max="99"
-                    placeholder="hm?"
                     value={this.state.confidence}
                     onChange={e => this.handleConfidenceChange(e)}
                   />

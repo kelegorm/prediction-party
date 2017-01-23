@@ -24,6 +24,7 @@ button {
   color: white;
   border: 1px solid black;
   border-radius: 3px;
+  cursor: pointer;
 }
 button:disabled {
   color: #999;
