@@ -251,6 +251,7 @@ app.post('/api/add', checkAuth, (req, res) => {
   if (confidence < 50 || confidence > 99) {
     res.status(500).send('Confidence must be an integer in [50,99] interval');
     return;
+  }
 
   db.prepare(`
     INSERT INTO topics(title, created)
