@@ -77,11 +77,16 @@ button:disabled {
   flex: 1;
   text-align: right;
 }
-.bet--confidence label {
-  color: #666;
+.bet--confidence button {
+    margin-left: 4px;
 }
-.bet--confidence input {
-  font-size: 1em;
+.bet--confidence * {
+    font-size: 0.9em;
+}
+@media screen and (min-width: 700px) {
+    .bet--confidence * {
+        font-size: 1em;
+    }
 }
 
 .bet--counter {

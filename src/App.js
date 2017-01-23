@@ -71,6 +71,10 @@ class Bet extends Component {
     this.setState({ confidence: e.target.value });
   }
 
+  canBet() {
+    return this.state.confidence >= 1 && this.state.confidence <= 99;
+  }
+
   render() {
     return (
       <div className="bet">
@@ -95,7 +99,6 @@ class Bet extends Component {
               this.props.self_confidence :
               (
                 <form onSubmit={e => this.handleSubmit(e)}>
-                  <label>Ставка: </label>
                   <input
                     type="number"
                     min="1"
@@ -103,6 +106,7 @@ class Bet extends Component {
                     value={this.state.confidence}
                     onChange={e => this.handleConfidenceChange(e)}
                   />
+                  <button disabled={!this.canBet()}>Поставить</button>
                 </form>
               )
             }
@@ -246,7 +250,7 @@ class App extends Component {
       <Login
         cb={(login, token) => this.setAuth(login, token)}
         oops={err => this.setError(err)}
-        dev_mode={false}
+        dev_mode={process.env.REACT_APP_DEV || false}
       />
     );
   }
