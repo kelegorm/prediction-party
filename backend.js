@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 const https = require('https');
 const querystring = require('querystring');
+const fs = require('fs');
 
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -93,26 +94,8 @@ passport.use(
   new SlackStrategy({
     clientID: CLIENT_ID,
     clientSecret: CLIENT_SECRET,
-    scope: ['identify'],
   }, (accessToken, refreshToken, profile, done) => {
-    https.get(
-      `https://slack.com/api/auth.test?${querystring.stringify({ token: accessToken })}`,
-      (res) => {
-        let body = '';
-        res.on('data', d => {
-          body += d;
-        });
-        res.on('end', () => {
-          console.log(body);
-          const data = JSON.parse(body);
-          if (data.team_id !== SLACK_TEAM_ID) {
-            done('wrong slack team');
-            return;
-          }
-          createOrGetUser(data.user, done);
-        });
-      }
-    ).on('error', () => done('http error'));
+    createOrGetUser(profile.user.id, done);
   })
 );
 
