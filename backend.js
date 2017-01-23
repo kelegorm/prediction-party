@@ -218,8 +218,8 @@ app.post('/api/append', checkAuth, (req, res) => {
   const topicId = req.body.topic_id;
   let confidence = req.body.confidence;
   confidence = parseInt(confidence, 10);
-  if (confidence < 50 || confidence > 99) {
-    res.status(500).send('Confidence must be an integer in [50,99] interval');
+  if (confidence < 1 || confidence > 99) {
+    res.status(500).send('Confidence must be an integer in [1,99] interval');
     return;
   }
   db.prepare(`
@@ -248,6 +248,9 @@ app.post('/api/add', checkAuth, (req, res) => {
     return;
   }
   const confidence = req.body.confidence;
+  if (confidence < 50 || confidence > 99) {
+    res.status(500).send('Confidence must be an integer in [50,99] interval');
+    return;
 
   db.prepare(`
     INSERT INTO topics(title, created)

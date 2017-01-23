@@ -98,7 +98,7 @@ class Bet extends Component {
                   <label>Ставка: </label>
                   <input
                     type="number"
-                    min="50"
+                    min="1"
                     max="99"
                     value={this.state.confidence}
                     onChange={e => this.handleConfidenceChange(e)}
