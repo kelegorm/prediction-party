@@ -14,7 +14,7 @@ const db = new sqlite3.Database('bets.sqlite');
 
 const passport = require('passport');
 const SlackStrategy = require('passport-slack').Strategy;
-const { SESSION_SECRET, CLIENT_ID, CLIENT_SECRET, SLACK_TEAM_ID } = process.env;
+const { DISABLE_NEW_BETS, SESSION_SECRET, CLIENT_ID, CLIENT_SECRET, SLACK_TEAM_ID } = process.env;
 
 function initDB() {
   db.run(`
@@ -214,6 +214,10 @@ app.get('/api/list', checkAuth, (req, res) => {
 });
 
 app.post('/api/append', checkAuth, (req, res) => {
+  if (DISABLE_NEW_BETS) {
+    res.status(500).send('New bets are disabled');
+    return;
+  }
   const login = req.user.login;
   const topicId = req.body.topic_id;
   let confidence = req.body.confidence;
@@ -241,6 +245,10 @@ app.post('/api/append', checkAuth, (req, res) => {
 });
 
 app.post('/api/add', checkAuth, (req, res) => {
+  if (DISABLE_NEW_BETS) {
+    res.status(500).send('New bets are disabled');
+    return;
+  }
   const login = req.user.login;
   const title = req.body.title;
   if (title.length < 8) {

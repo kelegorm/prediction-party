@@ -6,6 +6,8 @@ import moment from 'moment';
 
 moment.locale('ru');
 
+const DISABLE_NEW_BETS = true;
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -75,6 +77,27 @@ class Bet extends Component {
     return this.state.confidence >= 1 && this.state.confidence <= 99;
   }
 
+  renderConfidence() {
+    if (this.props.self_confidence) {
+      return this.props.self_confidence;
+    }
+    if (DISABLE_NEW_BETS) {
+      return null;
+    }
+    return (
+      <form onSubmit={e => this.handleSubmit(e)}>
+          <input
+          type="number"
+          min="1"
+          max="99"
+          value={this.state.confidence}
+          onChange={e => this.handleConfidenceChange(e)}
+          />
+          <button disabled={!this.canBet()}>Поставить</button>
+      </form>
+    );
+  }
+
   render() {
     return (
       <div className="bet">
@@ -94,22 +117,7 @@ class Bet extends Component {
             </div>
           </div>
           <div className="bet--confidence">
-            {
-              this.props.self_confidence ?
-              this.props.self_confidence :
-              (
-                <form onSubmit={e => this.handleSubmit(e)}>
-                  <input
-                    type="number"
-                    min="1"
-                    max="99"
-                    value={this.state.confidence}
-                    onChange={e => this.handleConfidenceChange(e)}
-                  />
-                  <button disabled={!this.canBet()}>Поставить</button>
-                </form>
-              )
-            }
+            {this.renderConfidence()}
           </div>
         </div>
       </div>
@@ -164,6 +172,9 @@ class BetAdd extends Component {
   }
 
   render() {
+    if (DISABLE_NEW_BETS) {
+      return <h1>Ставки сделаны, ставок больше нет.</h1>;
+    }
     return (
       <form className="bet-add" onSubmit={e => this.handleSubmit(e)}>
         <label>Текст ставки:</label>
@@ -348,11 +359,10 @@ TODO
    [x] longer bet-add text line (multiline design)
    [x] polyfill fetch
    [x] mobile design
-   cleanup bet-add on addition
-   smaller prediction field
-   text with explanation of good bets
-   single server with static
-   fill bet list with my own bets
+   [x] cleanup bet-add on addition
+   [s] text with explanation of good bets
+   [x] single server with static
+   [x] fill bet list with my own bets
 */
 
 /*
