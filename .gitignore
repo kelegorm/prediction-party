@@ -20,4 +20,4 @@ npm-debug.log
 # Might be allowed later when NPM becomes more stable.
 /package-lock.json
 
-/backend.js
+/backend/build

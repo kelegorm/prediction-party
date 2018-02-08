@@ -31,10 +31,12 @@
     "whatwg-fetch": "^2.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "start-backend": "yarn run build-backend:live",
-    "build-backend:live": "nodemon --exec ./node_modules/.bin/ts-node -- ./backend.ts",
+    "build": "yarn run build-front && yarn run build-back",
+    "build-front": "react-scripts build",
+    "build-back": "tsc -p ./backend",
+    "start-back-dev": "nodemon --exec ./node_modules/.bin/ts-node -- -P backend ./backend/index.ts",
+    "start-front-dev": "react-scripts start",
+    "start-back": "node ./backend/build/index.js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
