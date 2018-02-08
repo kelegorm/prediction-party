@@ -50,12 +50,24 @@
   version "8.9.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.9.1.tgz#5a329d73a97f3c5a626dfe0ed8c0b831fee5357a"
 
+"@types/passport@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@types/passport/-/passport-0.4.2.tgz#0374b3fb69834437ad5657442e5d9be16d9a8e82"
+  dependencies:
+    "@types/express" "*"
+
 "@types/serve-static@*":
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/@types/serve-static/-/serve-static-1.13.1.tgz#1d2801fa635d274cd97d4ec07e26b21b44127492"
   dependencies:
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
+
+"@types/sqlite3@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@types/sqlite3/-/sqlite3-3.1.1.tgz#f9b707c574e8d2f73d6c41aaa86e28b6ef85a324"
+  dependencies:
+    "@types/node" "*"
 
 "@types/strip-bom@^3.0.0":
   version "3.0.0"
@@ -6485,7 +6497,7 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-sqlite3@3.1.13, sqlite3@^3.1.8:
+sqlite3@3.1.13, sqlite3@^3.1.13:
   version "3.1.13"
   resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-3.1.13.tgz#d990a05627392768de6278bafd1a31fdfe907dd9"
   dependencies:

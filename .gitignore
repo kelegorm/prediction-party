@@ -19,3 +19,5 @@ npm-debug.log
 # It should be committed, but unfortunately 'npm install' changes the order on each install which breaks automated deploys.
 # Might be allowed later when NPM becomes more stable.
 /package-lock.json
+
+/backend.js
