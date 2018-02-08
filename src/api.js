@@ -1,88 +1,75 @@
-import 'whatwg-fetch';
+import "whatwg-fetch";
 
-const BACKEND = '';
+const BACKEND = "";
 
-function checkStatus(response) {
+async function checkStatus(response) {
   if (response.status >= 200 && response.status < 300) {
-    return response;
+    return;
   }
-  return response.text().then(
-    text => {
-      throw new Error(text);
-    }
-  );
+  const text = await response.text();
+  throw new Error(text);
 }
 
-function parseJSON(response) {
-  return response.json();
+class Api {
+  async fakeuser(login) {
+    const response = await fetch(`${BACKEND}/api/fakeuser?login=${login}`);
+    await checkStatus(response);
+    return await response.json();
+  }
+
+  async checkAuth() {
+    const response = await fetch(`${BACKEND}/api/check-auth`, {
+      credentials: "same-origin"
+    });
+    await checkStatus(response);
+    return await response.json();
+  }
+
+  async logout() {
+    const response = await fetch(`${BACKEND}/api/logout`, {
+      credentials: "same-origin"
+    });
+    await checkStatus(response);
+    return await response.json();
+  }
+
+  async list(token) {
+    const response = await fetch(`${BACKEND}/api/list?token=${token}`);
+    await checkStatus(response);
+    return await response.json();
+  }
+
+  async add(title, confidence, token) {
+    const response = await fetch(`${BACKEND}/api/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        title,
+        confidence,
+        token
+      })
+    });
+    await checkStatus(response);
+    return response.json();
+  }
+
+  async append(topic_id, confidence, token) {
+    const response = await fetch(`${BACKEND}/api/append`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        topic_id,
+        confidence,
+        token
+      })
+    });
+    await checkStatus(response);
+    return response.json();
+  }
 }
 
-
-const fakeuser = login => {
-  return fetch(
-    `${BACKEND}/api/fakeuser?login=${login}`,
-  ).then(checkStatus).then(parseJSON);
-};
-
-const checkAuth = () => {
-  return fetch(
-    `${BACKEND}/api/check-auth`,
-    {
-      credentials: 'same-origin',
-    }
-  ).then(checkStatus).then(parseJSON);
-};
-
-const logout = () => {
-  return fetch(
-    `${BACKEND}/api/logout`,
-    {
-      credentials: 'same-origin',
-    }
-  ).then(checkStatus).then(parseJSON);
-};
-
-const list = token => {
-  return fetch(
-    `${BACKEND}/api/list?token=${token}`
-  ).then(checkStatus).then(parseJSON);
-};
-
-const add = (title, confidence, token) => {
-  return fetch(
-    `${BACKEND}/api/add`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        title, confidence, token
-      }),
-    }
-  ).then(checkStatus).then(parseJSON);
-};
-
-const append = (topic_id, confidence, token) => {
-  return fetch(
-    `${BACKEND}/api/append`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        topic_id, confidence, token,
-      }),
-    }
-  ).then(checkStatus).then(parseJSON);
-};
-
-export default {
-  fakeuser,
-  logout,
-  checkAuth,
-  list,
-  add,
-  append,
-};
+export default new Api();
