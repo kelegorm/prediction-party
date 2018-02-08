@@ -261,7 +261,7 @@ class App extends Component {
       <Login
         cb={(login, token) => this.setAuth(login, token)}
         oops={err => this.setError(err)}
-        dev_mode={process.env.REACT_APP_DEV || false}
+        dev_mode={process.env.NODE_ENV === 'development'}
       />
     );
   }
