@@ -1,18 +1,18 @@
 /* eslint-env node */
 /* eslint-disable no-console */
-const https = require('https');
-const querystring = require('querystring');
-const fs = require('fs');
+import 'https';
+import 'querystring';
+import 'fs';
 
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const session = require('express-session');
+import express from 'express';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import session from 'express-session';
 
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('bets.sqlite');
 
-const passport = require('passport');
+import passport from 'passport';
 const SlackStrategy = require('passport-slack').Strategy;
 const { DISABLE_NEW_BETS, SESSION_SECRET, CLIENT_ID, CLIENT_SECRET, SLACK_TEAM_ID } = process.env;
 
