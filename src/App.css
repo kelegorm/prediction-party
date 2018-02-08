@@ -1,35 +1,7 @@
-* {
-  box-sizing: border-box;
-  margin: 0; padding: 0;
-}
-
 .App {
   text-align: center;
 }
 
-input {
-  height: 1.8em;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  padding: 4px;
-}
-textarea {
-  border: 1px solid #ddd;
-  padding: 4px;
-}
-button {
-  height: 1.8em;
-  padding: 0.2em 0.5em;
-  background: black;
-  color: white;
-  border: 1px solid black;
-  border-radius: 3px;
-  cursor: pointer;
-}
-button:disabled {
-  color: #999;
-  background-color: #333;
-}
 
 .App-header {
   background-color: #222;
@@ -54,122 +26,7 @@ button:disabled {
   max-width: 800px;
 }
 
-.bet {
-  width: 100%;
-  margin: 8px 0;
-  padding: 15px 0;
-  border-bottom: solid 1px #f0f0f0;
-  font-size: 1.2em;
-}
-
-.bet--title {
-  text-align: left;
-  margin-bottom: 0.3em;
-}
-
-.bet--aux {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.bet--confidence {
-  flex: 1;
-  text-align: right;
-}
-.bet--confidence button {
-    margin-left: 4px;
-}
-.bet--confidence * {
-    font-size: 0.9em;
-}
-@media screen and (min-width: 700px) {
-    .bet--confidence * {
-        font-size: 1em;
-    }
-}
-
-.bet--counter {
-  width: 2em;
-  height: 2em;
-  font-size: 0.7em;
-  line-height: 2em;
-  border: 1px solid #ccc;
-  background-color: #f0f0f0;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
-.bet--moments {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 0.6em;
-  color: #999;
-}
-
-@media screen and (min-width: 700px) {
-  .bet {
-    font-size: 1.4em;
-  }
-  .bet--moments {
-    font-size: 0.6em;
-  }
-}
-
-.login {
-  display: flex;
-}
-.login button {
-  margin-left: 10px;
-  font-size: 1.4em;
-}
-.login input {
-  width: 80%;
-  font-size: 1.4em;
-}
-
 .auth-data {
   color: #999;
   margin-bottom: 20px;
-}
-
-.bet-add {
-  display: flex;
-  flex-direction: column;
-  align-items: left;
-  margin-bottom: 40px;
-  text-align: left;
-  font-size: 1.2em;
-}
-.bet-add--line2 {
-  display: flex;
-  align-items: center;
-}
-.bet-add--line2 > * {
-  margin-right: 0.3em;
-}
-.bet-add input {
-  font-size: 1.2em;
-  width: 2.5em;
-}
-.bet-add button {
-  flex: 1;
-  font-size: 1.2em;
-  height: 1.8em;
-  margin-right: 0;
-}
-.bet-add textarea {
-  font-size: 1.2em;
-  margin-bottom: 8px;
-}
-.bet-add button {
-  align-self: center;
-  width: 50%;
-}
-
-.error {
-  padding: 20px;
-  margin: 10px;
-  background-color: #fdd;
 }

@@ -2,6 +2,8 @@ import * as React from "react";
 
 import { Api } from './api';
 
+import './Login.css';
+
 interface Props {
   dev_mode: boolean;
   cb: (login: string, token: string) => void;
@@ -37,11 +39,11 @@ export default class Login extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        <form className="login" action="/auth/slack" method="get">
+        <form className="Login" action="/auth/slack" method="get">
           <button>Войти через Slack</button>
         </form>
         {this.props.dev_mode && (
-           <form className="login" onSubmit={e => this.handleSubmit(e)}>
+           <form className="Login" onSubmit={e => this.handleSubmit(e)}>
              <input
                type="text"
                placeholder="Логин латиницей"

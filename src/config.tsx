@@ -1,1 +1,1 @@
-export const DISABLE_NEW_BETS = true;
+export const DISABLE_NEW_BETS = false;

@@ -4,6 +4,8 @@ import { Api, Bet } from "./api";
 
 import { DISABLE_NEW_BETS } from "./config";
 
+import './BetCard.css';
+
 export interface Props {
   token: string;
   refetch: () => void;
@@ -68,19 +70,19 @@ export default class BetCard extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="bet">
-        <div className="bet--title">{this.props.bet.title}</div>
-        <div className="bet--aux">
-          <div className="bet--counter">{this.props.bet.count}</div>
-          <div className="bet--moments">
-            <div className="bet--last-bet-created">
+      <div className="BetCard">
+        <div className="BetCard-title">{this.props.bet.title}</div>
+        <div className="BetCard-aux">
+          <div className="BetCard-counter">{this.props.bet.count}</div>
+          <div className="BetCard-moments">
+            <div className="BetCard-last-bet-created">
               Последняя ставка: {this.props.bet.last_bet_created.fromNow()}
             </div>
-            <div className="bet--topic-created">
+            <div className="BetCard-topic-created">
               Первая ставка: {this.props.bet.topic_created.fromNow()}
             </div>
           </div>
-          <div className="bet--confidence">{this.renderConfidence()}</div>
+          <div className="BetCard-confidence">{this.renderConfidence()}</div>
         </div>
       </div>
     );

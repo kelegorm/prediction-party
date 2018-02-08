@@ -6,6 +6,7 @@ import { Api, Bet } from "./api";
 
 import BetAdd from './BetAdd';
 import BetList from './BetList';
+import ErrorBox from './ErrorBox';
 import Login from './Login';
 
 import "./App.css";
@@ -108,7 +109,7 @@ class App extends React.Component<Props, State> {
     if (!this.state.error) {
       return null;
     }
-    return <div className="error">{this.state.error}</div>;
+    return <ErrorBox>{this.state.error}</ErrorBox>;
   }
 
   renderLoading() {
