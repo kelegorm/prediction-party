@@ -1,0 +1,20 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-react",
+    "tslint-config-prettier"
+  ],
+  "rules": {
+    "curly": [true, "ignore-same-line"],
+    "interface-name": [true, "never-prefix"],
+    "member-access": false,
+    "member-ordering": [true, {"order": "fields-first"}],
+    "no-submodule-imports": false,
+    "jsx-no-lambda": false,
+    "object-literal-sort-keys": false,
+    "no-implicit-dependencies": false,
+    "jsx-boolean-value": [true, "never"],
+    "no-empty-interface": false,
+    "ordered-imports": false
+  }
+}
