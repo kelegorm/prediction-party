@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
 import { Api } from './api';
-
-import './Login.css';
+import { Column, Row } from './components/layout';
+import { Button, Input } from './components/ui';
 
 interface Props {
   dev_mode: boolean;
@@ -32,28 +32,30 @@ export default class Login extends React.Component<Props, State> {
 
   handleChange(event: React.FormEvent<HTMLInputElement>) {
     this.setState({
-      login: event.currentTarget.value
+      login: event.currentTarget.value,
     });
   }
 
   render() {
     return (
-      <div>
-        <form className="Login" action="/auth/slack" method="get">
-          <button>Войти через Slack</button>
+      <Column>
+        <form action="/auth/slack" method="get">
+          <Button>Войти через Slack</Button>
         </form>
         {this.props.dev_mode && (
-           <form className="Login" onSubmit={e => this.handleSubmit(e)}>
-             <input
-               type="text"
-               placeholder="Логин латиницей"
-               value={this.state.login}
-               onChange={e => this.handleChange(e)}
-             />
-             <button onClick={e => this.handleSubmit(e)}>Войти</button>
-           </form>
+          <form onSubmit={e => this.handleSubmit(e)}>
+            <Row>
+              <Input
+                type="text"
+                placeholder="Логин латиницей"
+                value={this.state.login}
+                onChange={e => this.handleChange(e)}
+              />
+              <Button onClick={e => this.handleSubmit(e)}>Войти</Button>
+            </Row>
+          </form>
         )}
-      </div>
+      </Column>
     );
   }
 }

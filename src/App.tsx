@@ -1,17 +1,18 @@
-import * as React from "react";
+import * as React from 'react';
+import styled from 'styled-components';
 
-import * as moment from "moment";
+import * as moment from 'moment';
 
-import { Api, Bet } from "./api";
+import { Api, Bet } from './api';
 
 import BetAdd from './BetAdd';
 import BetList from './BetList';
 import ErrorBox from './ErrorBox';
 import Login from './Login';
+import SelfInfo from './SelfInfo';
+import { Column } from './components/layout';
 
-import "./App.css";
-
-moment.locale("ru");
+moment.locale('ru');
 
 interface Props {}
 
@@ -22,35 +23,66 @@ interface State {
   bets: Bet[];
 }
 
+const MegaHeader = styled.header`
+  background-color: #222;
+  color: white;
+  margin-bottom: 30px;
+  font-size: 2em;
+  line-height: 1em;
+  text-align: center;
+  padding: 30px 0;
+`;
+const Main = styled.main`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 5px;
+`;
+
 class App extends React.Component<Props, State> {
   state: State = {
-    bets: []
+    bets: [],
   };
 
   constructor(props: Props) {
     super(props);
     this.setError = this.setError.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   async componentWillMount() {
+    if (window.localStorage.login && window.localStorage.token) {
+      this.setAuth(window.localStorage.login, window.localStorage.token);
+      return;
+    }
+
     try {
       const user = await Api.checkAuth();
       this.setAuth(user.login, user.token);
     } catch (e) {
       this.setState({
         login: undefined,
-        token: undefined
+        token: undefined,
       });
     }
   }
 
   setAuth(login: string, token: string) {
-    this.setState({
-      login,
-      token,
-      error: undefined
-    });
-    this.refetch();
+    window.localStorage.login = login;
+    window.localStorage.token = token;
+    this.setState(
+      {
+        login,
+        token,
+        error: undefined,
+      },
+      () => {
+        this.refetch();
+      }
+    );
+  }
+
+  isLoggedIn() {
+    return this.state.login && this.state.token;
   }
 
   setError(error: Error) {
@@ -74,34 +106,9 @@ class App extends React.Component<Props, State> {
     return (
       <Login
         cb={(login, token) => this.setAuth(login, token)}
-        oops={err => this.setError(err)}
-        dev_mode={process.env.NODE_ENV === "development"}
+        oops={this.setError}
+        dev_mode={process.env.NODE_ENV === 'development'}
       />
-    );
-  }
-
-  renderMain() {
-    return (
-      <div>
-        <div className="auth-data">
-          <div className="auth-data--login">
-            login: {this.state.login}, token: {this.state.token}
-          </div>
-          <a className="logout" href="#" onClick={() => this.logout()}>
-            Выйти
-          </a>
-        </div>
-        <BetAdd
-          refetch={() => this.refetch()}
-          token={this.state.token!}
-          oops={this.setError}
-        />
-        <BetList
-          bets={this.state.bets}
-          refetch={() => this.refetch()}
-          token={this.state.token!}
-        />
-      </div>
     );
   }
 
@@ -112,25 +119,42 @@ class App extends React.Component<Props, State> {
     return <ErrorBox>{this.state.error}</ErrorBox>;
   }
 
-  renderLoading() {
-    return null;
-  }
-
   renderCore() {
-    if (!this.state.token) {
+    if (!this.isLoggedIn()) {
       return this.renderLogin();
     }
-    return this.renderMain();
+
+    return (
+      <Column margin={20}>
+        <SelfInfo
+          login={this.state.login!}
+          token={this.state.token!}
+          logout={this.logout}
+        />
+        <BetAdd
+          refetch={() => this.refetch()}
+          token={this.state.token!}
+          oops={this.setError}
+        />
+        <BetList
+          bets={this.state.bets}
+          refetch={() => this.refetch()}
+          token={this.state.token!}
+        />
+      </Column>
+    );
   }
 
   render() {
     return (
-      <div className="App">
-        <header className="App-header">Предсказания на 2017 год</header>
-        <div className="App-main">
-          {this.renderError()}
-          {this.renderCore()}
-        </div>
+      <div>
+        <MegaHeader>Предсказания на 2017 год</MegaHeader>
+        <Main>
+          <Column>
+            {this.renderError()}
+            {this.renderCore()}
+          </Column>
+        </Main>
       </div>
     );
   }

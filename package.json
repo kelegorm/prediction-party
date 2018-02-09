@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/webpack": "^3.8.5",
+    "@types/webpack-env": "^1.13.5",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
@@ -13,7 +15,9 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "sqlite": "^2.9.1",
-    "sqlite3": "^3.1.13"
+    "sqlite3": "^3.1.13",
+    "styled-components": "^3.1.6",
+    "styled-flex-component": "^2.2.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.1",

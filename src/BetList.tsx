@@ -1,6 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
 import BetCard from './BetCard';
+
+import { Column } from './components/layout';
 
 import { Bet } from './api';
 
@@ -11,7 +13,8 @@ interface Props {
 }
 
 const BetList = (props: Props) => (
-  <div className="bet-list">
+  <Column margin={20}>
+    <h1>Список ставок</h1>
     {props.bets.map(bet => (
       <BetCard
         bet={bet}
@@ -20,7 +23,7 @@ const BetList = (props: Props) => (
         key={bet.topic_id}
       />
     ))}
-  </div>
+  </Column>
 );
 
 export default BetList;

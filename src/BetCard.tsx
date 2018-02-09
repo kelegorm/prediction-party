@@ -1,10 +1,12 @@
-import * as React from "react";
+import * as React from 'react';
+import styled from 'styled-components';
 
-import { Api, Bet } from "./api";
+import { Api, Bet } from './api';
 
-import { DISABLE_NEW_BETS } from "./config";
+import { DISABLE_NEW_BETS } from './config';
 
-import './BetCard.css';
+import { Row } from './components/layout';
+import { Button, Card, Counter, Input } from './components/ui';
 
 export interface Props {
   token: string;
@@ -16,9 +18,23 @@ interface State {
   confidence: number | undefined;
 }
 
+const Moments = styled.div`
+  font-size: 0.8em;
+  color: #999;
+  text-align: right;
+`;
+
+const Confidence = styled.div`
+  font-weight: bold;
+  font-size: 1.2em;
+  &:after {
+    content: '%';
+  }
+`;
+
 export default class BetCard extends React.Component<Props, State> {
   state: State = {
-    confidence: undefined
+    confidence: undefined,
   };
 
   async handleSubmit(event: React.SyntheticEvent<EventTarget>) {
@@ -49,42 +65,43 @@ export default class BetCard extends React.Component<Props, State> {
 
   renderConfidence() {
     if (this.props.bet.self_confidence) {
-      return this.props.bet.self_confidence;
+      return <Confidence>{this.props.bet.self_confidence}</Confidence>;
     }
     if (DISABLE_NEW_BETS) {
       return null;
     }
     return (
       <form onSubmit={e => this.handleSubmit(e)}>
-        <input
-          type="number"
-          min="1"
-          max="99"
-          value={this.state.confidence}
-          onChange={e => this.handleConfidenceChange(e)}
-        />
-        <button disabled={!this.canBet()}>Поставить</button>
+        <Row>
+          <Input
+            type="number"
+            min="1"
+            max="99"
+            value={this.state.confidence}
+            onChange={e => this.handleConfidenceChange(e)}
+          />
+          <Button disabled={!this.canBet()}>Поставить</Button>
+        </Row>
       </form>
     );
   }
 
   render() {
     return (
-      <div className="BetCard">
-        <div className="BetCard-title">{this.props.bet.title}</div>
-        <div className="BetCard-aux">
-          <div className="BetCard-counter">{this.props.bet.count}</div>
-          <div className="BetCard-moments">
-            <div className="BetCard-last-bet-created">
+      <Card.Container>
+        <Card.Header>{this.props.bet.title}</Card.Header>
+        <Card.Body>
+          <Row center>
+            <div style={{ flex: 1 }}>{this.renderConfidence()}</div>
+            <Moments>
               Последняя ставка: {this.props.bet.last_bet_created.fromNow()}
-            </div>
-            <div className="BetCard-topic-created">
+              <br />
               Первая ставка: {this.props.bet.topic_created.fromNow()}
-            </div>
-          </div>
-          <div className="BetCard-confidence">{this.renderConfidence()}</div>
-        </div>
-      </div>
+            </Moments>
+            <Counter>{this.props.bet.count}</Counter>
+          </Row>
+        </Card.Body>
+      </Card.Container>
     );
   }
 }

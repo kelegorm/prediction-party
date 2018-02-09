@@ -1,13 +1,8 @@
-import * as React from 'react';
+import styled from 'styled-components';
 
-import './ErrorBox.css';
+const ErrorBox = styled.div`
+  padding: 20px;
+  background-color: #fdd;
+`;
 
-interface Props {
-  children: React.ReactNode;
-}
-
-export default class ErrorBox extends React.Component<Props, {}> {
-  render() {
-    return <div className="ErrorBox">{this.props.children}</div>;
-  }
-}
+export default ErrorBox;

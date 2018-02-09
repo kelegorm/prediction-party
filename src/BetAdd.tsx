@@ -1,9 +1,10 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { Api } from "./api";
-import { DISABLE_NEW_BETS } from "./config";
+import { Api } from './api';
+import { DISABLE_NEW_BETS } from './config';
 
-import './BetAdd.css';
+import { Column } from './components/layout';
+import { LargeButton, Input, Label, Textarea } from './components/ui';
 
 interface Props {
   refetch: () => void;
@@ -34,10 +35,14 @@ export default class BetAdd extends React.Component<Props, State> {
 
     try {
       if (!this.isValid()) {
-        throw Error("internal error");
+        throw Error('internal error');
       }
 
-      await Api.add(this.state.title!, this.state.confidence!, this.props.token);
+      await Api.add(
+        this.state.title!,
+        this.state.confidence!,
+        this.props.token
+      );
       this.props.refetch();
     } catch (e) {
       this.props.oops(e);
@@ -47,8 +52,8 @@ export default class BetAdd extends React.Component<Props, State> {
 
   clean() {
     this.setState({
-      title: "",
-      confidence: undefined
+      title: '',
+      confidence: undefined,
     });
     this.textarea!.focus();
   }
@@ -68,30 +73,35 @@ export default class BetAdd extends React.Component<Props, State> {
       return <h1>Ставки сделаны, ставок больше нет.</h1>;
     }
     return (
-      <form className="BetAdd" onSubmit={e => this.handleSubmit(e)}>
-        <label>Текст ставки:</label>
-        <textarea
-          placeholder="Например: Путин останется президентом"
-          value={this.state.title}
-          onChange={e => this.handleChange(e)}
-          ref={ref => (this.textarea = ref)}
-        />
-        <div className="BetAdd-line2">
-          <label>Степень уверенности:</label>
-          <input
-            type="number"
-            min="50"
-            max="99"
-            value={this.state.confidence}
-            onChange={e => this.handleConfidenceChange(e)}
-          />
-          <button
+      <form onSubmit={e => this.handleSubmit(e)}>
+        <h1>Добавить ставку</h1>
+        <Column>
+          <div>
+            <Label>Текст ставки:</Label>
+            <Textarea
+              placeholder="Например: Путин останется президентом"
+              value={this.state.title}
+              onChange={e => this.handleChange(e)}
+              innerRef={ref => (this.textarea = ref)}
+            />
+          </div>
+          <div>
+            <Label>Степень уверенности:</Label>
+            <Input
+              type="number"
+              min="50"
+              max="99"
+              value={this.state.confidence}
+              onChange={e => this.handleConfidenceChange(e)}
+            />
+          </div>
+          <LargeButton
             disabled={!this.isValid()}
             onClick={e => this.handleSubmit(e)}
           >
             Добавить
-          </button>
-        </div>
+          </LargeButton>
+        </Column>
       </form>
     );
   }
