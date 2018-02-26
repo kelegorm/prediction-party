@@ -12,8 +12,6 @@ There are two Entities here: topics and predictions. Topic is a some future even
 
 ## Topic
 
-Bet is a entity user can only commit.
-
 ### Creating topic
 
 Topic is creating with your initial prediction. So, this method creates two entities.
