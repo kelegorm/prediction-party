@@ -42,10 +42,10 @@
     "whatwg-fetch": "^2.0.1"
   },
   "scripts": {
-    "build": "yarn run build-front && yarn run build-back",
+    "build": "npm run build-front && npm run build-back",
     "build-client": "react-scripts-ts build",
     "build-server": "tsc -p ./backend",
-    "dev": "concurrently 'yarn run dev-client' 'yarn run dev-server'",
+    "dev": "concurrently 'npm run dev-client' 'npm run dev-server'",
     "dev-client": "react-scripts-ts start",
     "dev-server": "sh -ac '. .env && DEV_MODE=1 nodemon --exec ./node_modules/.bin/ts-node -- -P backend ./backend/index.ts'",
     "server": "node ./backend/build/index.js",
