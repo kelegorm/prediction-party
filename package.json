@@ -42,7 +42,7 @@
     "whatwg-fetch": "^2.0.1"
   },
   "scripts": {
-    "build": "npm run build-front && npm run build-back",
+    "build": "npm run build-client && npm run build-server",
     "build-client": "react-scripts-ts build",
     "build-server": "tsc -p ./backend",
     "dev": "concurrently 'npm run dev-client' 'npm run dev-server'",
