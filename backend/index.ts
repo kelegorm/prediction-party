@@ -190,7 +190,7 @@ function checkAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 app.get("/api/list", checkAuth, (req: Request, res: Response) => {
-  const login = req.user.login;
+  const login = req.user!.login;
   const bets: Object[] = [];
   let error: Error | undefined = undefined;
   db.each(
@@ -237,7 +237,7 @@ app.post("/api/append", checkAuth, (req, res) => {
     res.status(500).send("New bets are disabled");
     return;
   }
-  const login = req.user.login;
+  const login = req.user!.login;
   const topicId = req.body.topic_id;
   let confidence = req.body.confidence;
   confidence = parseInt(confidence, 10);
@@ -269,7 +269,7 @@ app.post("/api/add", checkAuth, (req, res) => {
     res.status(500).send("New bets are disabled");
     return;
   }
-  const login = req.user.login;
+  const login = req.user!.login;
   const title = req.body.title;
   if (title.length < 8) {
     res.status(500).send("title is too short");
