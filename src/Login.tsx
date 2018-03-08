@@ -39,7 +39,7 @@ export default class Login extends React.Component<Props, State> {
   render() {
     return (
       <Column>
-        <form action="/auth/slack" method="get">
+        <form action="/api/auth/slack" method="get">
           <Button>Войти через Slack</Button>
         </form>
         {this.props.dev_mode && (

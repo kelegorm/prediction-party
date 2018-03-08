@@ -125,7 +125,7 @@ passport.use(
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(express.static("build"));
+app.use(express.static("build-client"));
 app.use(
   session({
     secret: SESSION_SECRET,
@@ -145,11 +145,11 @@ passport.deserializeUser((user, done) => {
 });
 
 // path to start the OAuth flow
-app.get("/auth/slack", passport.authorize("slack"));
+app.get("/api/auth/slack", passport.authorize("slack"));
 
 // OAuth callback url
 app.get(
-  "/auth/slack/callback",
+  "/api/auth/slack/callback",
   passport.authenticate("slack", { failureRedirect: "/" }),
   (req, res) => {
     res.redirect("/");

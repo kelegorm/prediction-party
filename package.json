@@ -43,7 +43,7 @@
   },
   "scripts": {
     "build": "npm run build-client && npm run build-server",
-    "build-client": "react-scripts-ts build",
+    "build-client": "react-scripts-ts build && sw-precache --config=sw-precache-config.js && uglifyjs build/service-worker.js >build/service-worker.js.ugly && mv build/service-worker.js.ugly build/service-worker.js && mv build build-client",
     "build-server": "tsc -p ./backend",
     "dev": "concurrently 'npm run dev-client' 'npm run dev-server'",
     "dev-client": "react-scripts-ts start",
