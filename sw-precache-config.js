@@ -1,6 +1,6 @@
 module.exports = {
   navigateFallback: '/index.html',
-  navigateFallbackWhitelist: [/^(?!api\/)/],
+  navigateFallbackWhitelist: [/^(?!\/api\/)/],
   root: 'build',
   staticFileGlobs: ['build/**/*.js', 'build/**/*.css', 'build/index.html'],
 };
